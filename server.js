@@ -28,6 +28,11 @@ app.use(helmet({
     }
   }
 }));
+app.use((req, res, next) => {
+  console.log('\n');
+  console.log(`New ${req.method} request to ${req.path} from ${req.ip}`);
+  next();
+});
 
 const client = new MongoClient(process.env.DATABASE_URI, { useNewUrlParser: true });
 
