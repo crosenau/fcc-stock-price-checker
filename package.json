@@ -1,7 +1,7 @@
 {
-	"name": "my-hyperdev-app",
+	"name": "fcc-stock-price-checker-api",
 	"version": "0.0.1",
-	"description": "What am I about?",
+	"description": "Basic API for retrieving stock prices",
 	"main": "server.js",
 	"scripts": {
 		"start": "node server.js"
@@ -19,15 +19,14 @@
 		"node-fetch": "^2.3.0"
 	},
 	"engines": {
-		"node": "4.4.3"
+		"node": "10.x"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://hyperdev.com/#!/project/welcome-project"
+		"url": "https://github.com/crosenau/fcc-stock-price-checker"
 	},
 	"keywords": [
 		"node",
-		"hyperdev",
 		"express"
 	],
 	"license": "MIT",
