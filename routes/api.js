@@ -24,7 +24,7 @@ module.exports = (app, db) => {
           const currentPrice = await stockHandler.getPriceOf(ticker);
           const dbSearchResult = await db.collection('stocks').findOne({ stock: ticker })
           
-          const clientIP = req.ip;
+          const clientIP = req.headers['x-forwarded-for'] || req.ip;
 
           let likeIncrement = req.query.like ? 1 : 0;
 

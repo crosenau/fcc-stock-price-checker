@@ -28,9 +28,11 @@ app.use(helmet({
     }
   }
 }));
+
 app.use((req, res, next) => {
   console.log('\n');
   console.log(`New ${req.method} request to ${req.path} from ${req.ip}`);
+  console.log('x-forwarded-for: ', req.headers['x-forwarded-for']);
   next();
 });
 
