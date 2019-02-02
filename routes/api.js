@@ -8,39 +8,29 @@
 
 'use strict';
 
-const expect = require('chai').expect;
-const fetch = require('node-fetch');
-const MongoClient = require('mongodb');
+const stockHandler = require('../controllers/stockHandler.js');
 
 module.exports = (app, db) => {
 
   app.route('/api/stock-prices')
     .get(async (req, res) => {
-      // iex trading API: https://api.iextrading.com/1.0/stock/aapl/price
       try {
-        console.log(req.query);
-        const clientIP = req.ip;
-        const tickers = ((req.query.stock instanceof Array) ? req.query.stock : [req.query.stock])
-          .map(str => str.toUpperCase());
-        
-        console.log('tickers" ', tickers);
-        
-        let stocks = [];
+        const tickers = Array.isArray(req.query.stock) ? req.query.stock : [req.query.stock]
+        const stocks = [];
 
         for (let ticker of tickers) {
-          const url = `https://api.iextrading.com/1.0/stock/${ticker}/price`
-          console.log('url: ', url);
-          const response = await fetch(url);
-          const currentPrice = await response.json();
+          ticker = ticker.toUpperCase();
 
-          const queryResult = await db.collection('stocks').findOne({ stock: ticker })
-          console.log('queryResult: ', queryResult);
+          const currentPrice = await stockHandler.getPriceOf(ticker);
+          const dbSearchResult = await db.collection('stocks').findOne({ stock: ticker })
+          
+          const clientIP = req.ip;
 
           let likeIncrement = req.query.like ? 1 : 0;
 
-          if (queryResult 
-            && queryResult.ips
-            && queryResult.ips.includes(clientIP)
+          if (dbSearchResult 
+            && dbSearchResult.ips
+            && dbSearchResult.ips.includes(clientIP)
           ) {
               likeIncrement = 0;
           }
@@ -55,11 +45,7 @@ module.exports = (app, db) => {
             update.$addToSet = { ips: clientIP }
           }
 
-          console.log('update: ', update);
-
           const updateResult = await db.collection('stocks').findOneAndUpdate({ stock: ticker }, update, { upsert: true, returnOriginal: false });
-
-          console.log('updateResults: ', updateResult.value);
 
           stocks.push(updateResult.value);
         }
@@ -93,6 +79,8 @@ module.exports = (app, db) => {
         if (err.type === 'invalid-json') {
           return res.send('Unknown Symbol');
         }
+
+        res.send('Error retrieving stock data');
       }
     });
     
