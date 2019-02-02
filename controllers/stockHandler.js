@@ -7,7 +7,7 @@ function getPriceOf(ticker) {
     
     const stockPrice = fetch(url)
         .then(res => res.json())
-        .then(json => json)
+        .then(json => String(json))
         .catch(err => {
             throw err;
         });
